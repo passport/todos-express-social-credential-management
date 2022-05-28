@@ -18,7 +18,21 @@ $ cd todos-express-social-credential-management
 $ npm install
 ```
 
-Then start the server.
+This app requires credentials from Google, Facebook, and Twitter.
+
+Once credentials have been obtained, create a `.env` file and add the following
+environment variables:
+
+```
+GOOGLE_CLIENT_ID=__INSERT_GOOGLE_CLIENT_ID_HERE__
+GOOGLE_CLIENT_SECRET=__INSERT_GOOGLE_CLIENT_SECRET_HERE__
+FACEBOOK_CLIENT_ID=__INSERT_FACEBOOK_APP_ID_HERE__
+FACEBOOK_CLIENT_SECRET=__INSERT_FACEBOOK_APP_SECRET_HERE__
+TWITTER_CONSUMER_KEY=__INSERT_TWITTER_API_KEY_HERE__
+TWITTER_CONSUMER_SECRET=__INSERT_TWITTER_API_SECRET_KEY_HERE__
+```
+
+Start the server.
 
 ```bash
 $ npm start
