@@ -92,7 +92,23 @@ passport.use(new TwitterStrategy({
   consumerSecret: process.env['TWITTER_CONSUMER_SECRET'],
   callbackURL: '/oauth/callback/twitter'
 }, function verify(token, tokenSecret, profile, cb) {
-  return jitProvision('https://twitter.com', profile, cb);
+  return jitProvision('https://twitter.com', profile, function(err, user) {
+    if (err) { return cb(err); }
+    var cred = {
+      id: profile.id,
+      provider: 'https://twitter.com'
+    };
+    if (profile.username) {
+      cred.id = profile.username;
+    }
+    if (profile.emails && profile.emails[0]) {
+      cred.id = profile.emails[0].value;
+    }
+    if (profile.displayName) {
+      cred.name = profile.displayName;
+    }
+    return cb(null, user, { credential: cred });
+  });
 }));
 
 passport.serializeUser(function(user, cb) {
