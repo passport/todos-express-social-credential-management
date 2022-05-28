@@ -3,6 +3,7 @@ var passport = require('passport');
 var GoogleStrategy = require('passport-google-oidc');
 var FacebookStrategy = require('passport-facebook');
 var TwitterStrategy = require('passport-twitter');
+var querystring = require('querystring');
 var db = require('../db');
 
 
@@ -47,7 +48,18 @@ passport.use(new GoogleStrategy({
   callbackURL: '/oauth2/redirect/google',
   scope: [ 'profile' ]
 }, function verify(issuer, profile, cb) {
-  return jitProvision(issuer, profile, cb);
+  console.log('GOOGLE LOGIN');
+  console.log(profile);
+  
+  return jitProvision(issuer, profile, function(err, user) {
+    if (err) { return cb(err); }
+    var cred = {
+      id: profile.id,
+      provider: 'https://accounts.google.com',
+      name: profile.displayName
+    };
+    return cb(null, user, { credential: cred });
+  });
 }));
 
 passport.use(new FacebookStrategy({
@@ -89,9 +101,16 @@ router.get('/login', function(req, res, next) {
 router.get('/login/federated/google', passport.authenticate('google'));
 
 router.get('/oauth2/redirect/google', passport.authenticate('google', {
-  successReturnToOrRedirect: '/',
   failureRedirect: '/login'
-}));
+}), function(req, res, next) {
+  console.log('AUHTED GOOGLE');
+  console.log(req.authInfo);
+  
+  if (req.authInfo.credential) {
+    res.cookie('fc', querystring.stringify(req.authInfo.credential));
+  };
+  res.redirect('/');
+});
 
 router.get('/login/federated/facebook', passport.authenticate('facebook'));
 
