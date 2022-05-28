@@ -1,8 +1,16 @@
 window.addEventListener('load', function() {
-  console.log('app load...');
-  console.log(document.cookie);
   
   // https://www.quirksmode.org/js/cookies.html
+  function createCookie(name,value,days) {
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime()+(days*24*60*60*1000));
+      var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+  }
+  
   function readCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
@@ -14,28 +22,23 @@ window.addEventListener('load', function() {
     return null;
   }
   
+  function eraseCookie(name) {
+    createCookie(name,"",-1);
+  }
   
-  if (window.FederatedCredential) {
-    var c = readCookie('fc');
-    
-    console.log(c)
-    console.log(decodeURIComponent(c));
-    
-    var params = new URLSearchParams(decodeURIComponent(c));
+  
+  var fc = readCookie('fc');
+  eraseCookie('fc');
+  
+  if (window.FederatedCredential && fc) {
+    var params = new URLSearchParams(decodeURIComponent(fc));
     var data = {
       id: params.get('id'),
       provider: params.get('provider')
     };
     if (params.has('name')) {
-      console.log('HAS NAME');
       data.name = params.get('name');
     }
-    
-    //var params = new URLSearchParams(null);
-    console.log(params);
-    console.log(params.get('provider'));
-    console.log(params.get('id'))
-    console.log(params.get('name'))
     
     var credential = new FederatedCredential(data);
     navigator.credentials.store(credential)
