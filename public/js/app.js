@@ -22,17 +22,23 @@ window.addEventListener('load', function() {
     console.log(decodeURIComponent(c));
     
     var params = new URLSearchParams(decodeURIComponent(c));
+    var data = {
+      id: params.get('id'),
+      provider: params.get('provider')
+    };
+    if (params.has('name')) {
+      console.log('HAS NAME');
+      data.name = params.get('name');
+    }
+    
     //var params = new URLSearchParams(null);
     console.log(params);
     console.log(params.get('provider'));
     console.log(params.get('id'))
     console.log(params.get('name'))
     
-    var credential = new FederatedCredential({
-      id: params.get('id'),
-      provider: params.get('provider'),
-      name: params.get('name')
-    });
+    var credential = new FederatedCredential(data);
+    
     
     /*
     var credential = new FederatedCredential({

@@ -46,17 +46,19 @@ passport.use(new GoogleStrategy({
   clientID: process.env['GOOGLE_CLIENT_ID'],
   clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
   callbackURL: '/oauth2/redirect/google',
-  scope: [ 'profile', 'email' ]
+  scope: [ 'email' ]
 }, function verify(issuer, profile, cb) {
   return jitProvision(issuer, profile, function(err, user) {
     if (err) { return cb(err); }
     var cred = {
       id: profile.id,
-      provider: 'https://accounts.google.com',
-      name: profile.displayName
+      provider: 'https://accounts.google.com'
     };
     if (profile.emails && profile.emails[0]) {
       cred.id = profile.emails[0].value;
+    }
+    if (profile.displayName) {
+      cred.name = profile.displayName;
     }
     return cb(null, user, { credential: cred });
   });
@@ -66,9 +68,23 @@ passport.use(new FacebookStrategy({
   clientID: process.env['FACEBOOK_CLIENT_ID'],
   clientSecret: process.env['FACEBOOK_CLIENT_SECRET'],
   callbackURL: '/oauth2/redirect/facebook',
+  scope: [ 'public_profile', 'email' ],
   state: true
 }, function verify(accessToken, refreshToken, profile, cb) {
-  return jitProvision('https://www.facebook.com', profile, cb);
+  return jitProvision('https://www.facebook.com', profile, function(err, user) {
+    if (err) { return cb(err); }
+    var cred = {
+      id: profile.id,
+      provider: 'https://www.facebook.com'
+    };
+    if (profile.emails && profile.emails[0]) {
+      cred.id = profile.emails[0].value;
+    }
+    if (profile.displayName) {
+      cred.name = profile.displayName;
+    }
+    return cb(null, user, { credential: cred });
+  });
 }));
 
 passport.use(new TwitterStrategy({
