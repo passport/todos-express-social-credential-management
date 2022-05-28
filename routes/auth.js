@@ -46,11 +46,8 @@ passport.use(new GoogleStrategy({
   clientID: process.env['GOOGLE_CLIENT_ID'],
   clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
   callbackURL: '/oauth2/redirect/google',
-  scope: [ 'profile' ]
+  scope: [ 'profile', 'email' ]
 }, function verify(issuer, profile, cb) {
-  console.log('GOOGLE LOGIN');
-  console.log(profile);
-  
   return jitProvision(issuer, profile, function(err, user) {
     if (err) { return cb(err); }
     var cred = {
@@ -58,6 +55,9 @@ passport.use(new GoogleStrategy({
       provider: 'https://accounts.google.com',
       name: profile.displayName
     };
+    if (profile.emails && profile.emails[0]) {
+      cred.id = profile.emails[0].value;
+    }
     return cb(null, user, { credential: cred });
   });
 }));
@@ -92,6 +92,18 @@ passport.deserializeUser(function(user, cb) {
 });
 
 
+function setFederatedCredentialCookie(req, res, next) {
+  console.log('SETTING COOKIE');
+  console.log(req.authInfo);
+  
+  var credential = req.authInfo.credential;
+  if (!credential) { return next(); }
+  
+  console.log('SET IT!');
+  res.cookie('fc', querystring.stringify(credential));
+  next();
+}
+
 var router = express.Router();
 
 router.get('/login', function(req, res, next) {
@@ -102,13 +114,7 @@ router.get('/login/federated/google', passport.authenticate('google'));
 
 router.get('/oauth2/redirect/google', passport.authenticate('google', {
   failureRedirect: '/login'
-}), function(req, res, next) {
-  console.log('AUHTED GOOGLE');
-  console.log(req.authInfo);
-  
-  if (req.authInfo.credential) {
-    res.cookie('fc', querystring.stringify(req.authInfo.credential));
-  };
+}), setFederatedCredentialCookie, function(req, res, next) {
   res.redirect('/');
 });
 
