@@ -121,16 +121,18 @@ router.get('/oauth2/redirect/google', passport.authenticate('google', {
 router.get('/login/federated/facebook', passport.authenticate('facebook'));
 
 router.get('/oauth2/redirect/facebook', passport.authenticate('facebook', {
-  successReturnToOrRedirect: '/',
   failureRedirect: '/login'
-}));
+}), setFederatedCredentialCookie, function(req, res, next) {
+  res.redirect('/');
+});
 
 router.get('/login/federated/twitter', passport.authenticate('twitter'));
 
 router.get('/oauth/callback/twitter', passport.authenticate('twitter', {
-  successReturnToOrRedirect: '/',
   failureRedirect: '/login'
-}));
+}), setFederatedCredentialCookie, function(req, res, next) {
+  res.redirect('/');
+});
 
 router.post('/logout', function(req, res, next) {
   req.logout(function(err) {
