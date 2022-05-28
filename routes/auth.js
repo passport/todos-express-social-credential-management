@@ -125,13 +125,8 @@ passport.deserializeUser(function(user, cb) {
 
 
 function setFederatedCredentialCookie(req, res, next) {
-  console.log('SETTING COOKIE');
-  console.log(req.authInfo);
-  
   var credential = req.authInfo.credential;
   if (!credential) { return next(); }
-  
-  console.log('SET IT!');
   res.cookie('fc', querystring.stringify(credential));
   next();
 }
