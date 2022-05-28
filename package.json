@@ -2,7 +2,7 @@
   "name": "todos-express-social-credential-management",
   "version": "0.0.0",
   "private": true,
-  "description": "Express 4.x app using Passport for social sign in.",
+  "description": "Todo app using Express, Passport, and Credential Management API for sign in with Google, Facebook, and Twitter.",
   "keywords": [
     "example",
     "express",
