@@ -1,5 +1,4 @@
 window.addEventListener('load', function() {
-  console.log('loaded federated script');
   
   if (window.FederatedCredential) {
     navigator.credentials.get({
@@ -13,17 +12,19 @@ window.addEventListener('load', function() {
       mediation: 'required'
     })
     .then(function(credential) {
-      console.log('got cred!');
-      console.log(credential)
-    
       if (!credential) { return; }
       
       switch (credential.provider) {
       case 'https://accounts.google.com':
         window.location.href = '/login/federated/google';
         return;
+      case 'https://www.facebook.com':
+        window.location.href = '/login/federated/facebook';
+        return;
+      case 'https://twitter.com':
+        window.location.href = '/login/federated/twitter';
+        return;
       }
-    
     });
   }
   

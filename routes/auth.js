@@ -52,7 +52,7 @@ passport.use(new GoogleStrategy({
     if (err) { return cb(err); }
     var cred = {
       id: profile.id,
-      provider: 'https://accounts.google.com'
+      provider: issuer
     };
     if (profile.emails && profile.emails[0]) {
       cred.id = profile.emails[0].value;
