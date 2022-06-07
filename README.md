@@ -76,6 +76,13 @@ When the server receives a request, it authenticates the cookie and restores the
 login session, thus authenticating the user.  It then accesses or stores records
 in the database associated with the authenticated user.
 
+## Next Steps
+
+* Add passwordless.
+
+  Study [todos-express-webauthn](https://github.com/passport/todos-express-webauthn)
+  to learn how to let users sign in with biometrics or a security key.
+
 ## License
 
 [The Unlicense](https://opensource.org/licenses/unlicense)
